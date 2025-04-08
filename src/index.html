@@ -1,0 +1,61 @@
+<html>
+    <head>
+        <style>
+            body {
+                background-color: #111;
+                color: #eee;
+                font-family: Arial;
+            }
+            .button-container {
+                display: grid;
+                place-items: center;
+                grid-template-columns: repeat(2, 1fr);
+                grid-template-rows: repeat(2, 1fr);
+                gap: 100px;
+                margin: 100px 0;
+            }
+            .button-container > button {
+                height: 100px;
+                width: 200px;
+                font-size: 2rem;
+            }
+            .image-container {
+                display: flex;
+                justify-content: center;
+                align-items: center;
+            }
+            @keyframes breathe {
+                0%, 100% {
+                    transform: scale(1);
+                }
+                50% {
+                    transform: scale(1.1);
+                }
+            }
+
+            .logo {
+                animation: breathe 2s infinite ease-in-out;
+            }
+        </style>
+    </head>
+    <body>
+        <div class="button-container">
+            <button id="a">Noise A</button>
+            <button id="b">Noise B</button>
+            <button id="c">Noise C</button>
+            <button id="d">Noise D</button>
+        </div>
+        <div class='image-container'>
+            <img class='logo' width="400px" id='alien'/>
+        </div>
+        <script>
+            import alien from './alien.svg';
+            document.getElementById('alien').src = alien;
+
+            for (let letter of ['a', 'b', 'c', 'd']) {
+                const button = document.getElementById(letter)
+                button.addEventListener(() => console.log(letter));
+            }
+        </script>
+    </body>
+</html>
