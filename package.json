@@ -5,7 +5,7 @@
   "scripts": {
     "test": "sed 's/PROGMEM//' build/index_html.h > test/index_html.h && gcc -std=c23 test/test-server.c -o test/test-server.o && test/test-server.o",
     "build": "npx tinyweb -i src/index.html -o build/index.html -w src/ && gzip -kf build/index.html && npx make_header -i build/index.html.gz build/index_html.h",
-    "install": "cp build/index_html.h ../include"
+    "deploy": "cp build/index_html.h ../include"
   },
   "keywords": [],
   "author": "",
