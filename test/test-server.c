@@ -3,7 +3,7 @@
 #include <string.h>
 #include <unistd.h>
 #include <arpa/inet.h>
-#include "../build/index_html.h"
+#include "index_html.h"
 
 #define PORT 8000
 
