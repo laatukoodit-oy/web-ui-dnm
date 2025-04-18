@@ -57,25 +57,54 @@ int main() {
             exit(EXIT_FAILURE);
         }
 
-        printf("Connection from client\n");
+        printf("Connection from client.\n");
 
-        // Send HTTP headers
-        /*
-        char headers[90];
-        sprintf(
-            headers,
-            "HTTP/1.1 200 OK\r\n"
-            "Content-Encoding: gzip\r\n"
-            "Content-Type: text/html\r\n"
-            "Content-Length: %d\r\n\r\n",
-            sizeof(index_html)
+        char buffer[1024] = {0};
+        int bytes_received = recv(
+            client_socket,
+            buffer,
+            sizeof(buffer) - 1,
+            0
         );
-        */
 
-        send(client_socket, index_html, sizeof(index_html), 0);
+        if (bytes_received < 0) {
+            perror("Receive failed");
+        } else {
+            buffer[bytes_received] = '\0'; // Null-terminate the string
+            char *first_line = strtok(buffer, "\r\n");
+            printf("Client requested:\n\t%s\n", first_line);
+        }
+
+        char endpoint = buffer[5] & 7;
+
+        // Endpoint was a space -> send index_html
+        if (endpoint == 0) {
+            send(client_socket, index_html, sizeof(index_html), 0);
+            printf("Sent index page\n");
+        }
+        else if (endpoint < 6) {
+            const char ok[] =
+                "HTTP/1.1 200 OK\r\n"
+                "Connection: close\r\n"
+                "\r\n";
+
+            printf("Button %d pressed\n", endpoint);
+            send(client_socket, ok, sizeof(ok), 0);
+            printf("Sent 200 status\n");
+        }
+        // Endpoint was not 'a'-'e'
+        else {
+            const char not_found[] =
+                "HTTP/1.1 404 Not Found\r\n"
+                "Connection: close\r\n"
+                "\r\n";
+
+            send(client_socket, not_found, sizeof(not_found), 0);
+            printf("Sent 404 status.\n");
+        }
 
         close(client_socket);
-        printf("all done\n");
+        printf("Connection closed.\n\n");
     }
 
     return 0;
