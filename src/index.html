@@ -7,9 +7,9 @@
         --ch: 300px;
         --bg: #0e0e0e;
         --fg: #fafafa;
-        --a: #ddaadd;
-        --b: #aaddaa;
-        --c: #aadddd;
+        --a: #ff8888;
+        --b: #88ff88;
+        --c: #8888ff;
         background-color: var(--bg);
         width: 100vw;
         height: 100vh;
@@ -69,7 +69,7 @@
         background-repeat: repeat-x;
         width: 200%;
         height: 100%;
-        animation: scroll 10s linear infinite;
+        animation: scroll 5s linear infinite;
     }
 
     @keyframes scroll {
@@ -135,6 +135,7 @@
                     currentSound = (stop) ? null : button;
                     e.target.style.borderWidth = currentSound ? '5px' : null;
                     w.style.backgroundImage = currentSound ? soundWaves[button] : noSoundWave;
+                    //w.style.animationDuration = currentSound ? '10s' : null;
                 }
             );
         }
