@@ -5,7 +5,7 @@
 #include <arpa/inet.h>
 #include "index_html.h"
 
-#define PORT 8000
+int port = 8000;
 
 int main() {
     printf("Size of index_html: %d\n", sizeof(index_html));
@@ -15,7 +15,7 @@ int main() {
     struct sockaddr_in server_addr = {
         .sin_family = AF_INET,
         .sin_addr.s_addr = INADDR_ANY,
-        .sin_port = htons(PORT)
+        .sin_port = htons(port)
     };
 
     struct sockaddr_in client_addr;
@@ -30,10 +30,9 @@ int main() {
     }
 
     // Bind the socket to the port
-    if (bind(server_socket, (struct sockaddr *)&server_addr, sizeof(server_addr)) < 0) {
+    while (bind(server_socket, (struct sockaddr *)&server_addr, sizeof(server_addr)) < 0) {
         perror("Bind failed");
-        close(server_socket);
-        exit(EXIT_FAILURE);
+        server_addr.sin_port = htons(++port);
     }
 
     // Listen for incoming connections
@@ -43,7 +42,7 @@ int main() {
         exit(EXIT_FAILURE);
     }
 
-    printf("Server listening on http://0.0.0.0:%d\n", PORT);
+    printf("Server listening on http://0.0.0.0:%d\n", port);
 
     while(1) {
         client_socket = accept(
