@@ -1,61 +1,145 @@
 <html>
-    <head>
-        <style>
-            body {
-                background-color: #111;
-                color: #eee;
-                font-family: Arial;
-            }
-            .button-container {
-                display: grid;
-                place-items: center;
-                grid-template-columns: repeat(2, 1fr);
-                grid-template-rows: repeat(2, 1fr);
-                gap: 100px;
-                margin: 100px 0;
-            }
-            .button-container > button {
-                height: 100px;
-                width: 200px;
-                font-size: 2rem;
-            }
-            .image-container {
-                display: flex;
-                justify-content: center;
-                align-items: center;
-            }
-            @keyframes breathe {
-                0%, 100% {
-                    transform: scale(1);
-                }
-                50% {
-                    transform: scale(1.1);
-                }
-            }
+<head>
+  <style>
+    body {
+        margin: 0;
+        --cw: 600px;
+        --ch: 300px;
+        --bg: #0e0e0e;
+        --fg: #fafafa;
+        --a: #ddaadd;
+        --b: #aaddaa;
+        --c: #aadddd;
+        background-color: var(--bg);
+        width: 100vw;
+        height: 100vh;
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+        align-items: center;
+    }
 
-            .logo {
-                animation: breathe 2s infinite ease-in-out;
-            }
-        </style>
-    </head>
-    <body>
-        <div class="button-container">
-            <button id="a">Noise A</button>
-            <button id="b">Noise B</button>
-            <button id="c">Noise C</button>
-            <button id="d">Noise D</button>
-        </div>
-        <div class='image-container'>
-            <img class='logo' width="400px" id='alien'/>
-        </div>
-        <script>
-            import alien from './alien.svg';
-            document.getElementById('alien').src = alien;
+    .bc {
+        display: grid;
+        grid-template-columns: repeat(3, 1fr);
+        place-items: center;
+        column-gap: 60px;
+    }
 
-            for (let letter of ['a', 'b', 'c', 'd']) {
-                const button = document.getElementById(letter)
-                button.addEventListener(() => console.log(letter));
-            }
-        </script>
-    </body>
+    button {
+        width: 60px;
+        height: 60px;
+        border-radius: 50%;
+        border: none;
+        background-color: var(--fg);
+        color: var(--bg);
+        cursor: pointer;
+        font-weight: bold;
+        border: 0 solid var(--fg);
+    }
+
+    #a {
+        border-color: var(--a);
+    }
+
+    #b {
+        border-color: var(--b);
+    }
+
+    #c {
+        border-color: var(--c);
+    }
+
+    button:active {
+        transform: scale(0.95);
+    }
+
+    .sc {
+        width: var(--cw);
+        height: var(--ch);
+        overflow: hidden;
+        padding: 30px 0;
+        margin: 30px;
+        border: 2px solid var(--fg);
+        border-radius: 5px;
+    }
+
+    #w {
+        background-size: var(--cw) var(--ch);
+        background-repeat: repeat-x;
+        width: 200%;
+        height: 100%;
+        animation: scroll 10s linear infinite;
+    }
+
+    @keyframes scroll {
+        0% {
+            transform: translateX(0);
+        }
+        100% {
+            transform: translateX(-50%);
+        }
+    }
+  </style>
+</head>
+<body>
+    <div class="bc">
+        <button id="a">A</button>
+        <button id="b">B</button>
+        <button id="c">C</button>
+    </div>
+    <div class="sc">
+        <div id="w"></div>
+    </div>
+    <script>
+        import flatWave from './flat-wave.svg';
+        import triangleWave from './triangle-wave.svg';
+
+        function makeDataUrl(svg) {
+            const a = svg.replaceAll(`'`, `"`);
+            return `url('${a}')`;
+        }
+
+        const whiteWave = makeDataUrl(triangleWave);
+        const getColor = (c) => getComputedStyle(document.body)
+            .getPropertyValue(`--${c}`)
+            .trim()
+            .replace('#', '');
+
+        const soundWaves = {
+            a: whiteWave.replaceAll('ffffff', getColor('a')),
+            b: whiteWave.replaceAll('ffffff', getColor('b')),
+            c: whiteWave.replaceAll('ffffff', getColor('c'))
+        }
+
+        const noSoundWave = makeDataUrl(flatWave);
+        w.style.backgroundImage = noSoundWave;
+        let currentSound = null;
+
+        for (let button of ['a', 'b', 'c']) {
+            document.getElementById(button).addEventListener(
+                'click',
+                async (e) => {
+                    const stop = currentSound == button;
+
+                    try {
+                        await fetch(stop ? '/e' : `/${button}`);
+                    } catch {
+                        return;
+                    }
+
+                    if (currentSound) {
+                        document.getElementById(currentSound).style.border = null;
+                    }
+
+                    currentSound = (stop) ? null : button;
+                    e.target.style.borderWidth = currentSound ? '5px' : null;
+                    w.style.backgroundImage = currentSound ? soundWaves[button] : noSoundWave;
+                }
+            );
+        }
+
+
+    </script>
+</body>
 </html>
